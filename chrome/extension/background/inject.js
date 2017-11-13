@@ -44,41 +44,59 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const result = await isInjected(tabId);
   if (chrome.runtime.lastError || result[0]) return;
   if (UrlRegExp.goods.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, { file: `/js/${name}.bundle.js`, runAt: 'document_end' }, () => { });
+    chrome.tabs.executeScript(tabId, {code: `
+          var selectEle = document.querySelector("select[name=billingcycle]");
+          var optionELe = document.querySelector("option[value=annually]");
+          var currentUrl = location.href;
+          if (!!selectEle && !!optionELe) {
+            if (optionELe.selected == "selected") {
+              var submitEle = document.querySelector("input[type=submit]");
+              submitEle.click();
+            }
+            else {
+              optionELe.selected = "selected";
+              let e = document.createEvent("Event");
+              e.initEvent("change", true, true);
+              selectEle.dispatchEvent(e);
+            }
+          }
+          else {
+            window.location.href = currentUrl
+          }
+    `, runAt: 'document_end'}, () => { console.log("load success") });
   }
   else if (UrlRegExp.checkout.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, `
-      window.onload = () => {
-        const currentUrl = location.href;
-        const alipayEle = document.querySelector("input[value=newalipay]");
-        const accepttosEle = document.querySelector("input[name=accepttos]");
-        const submitELe = document.querySelector("input[type=submit]");
-        if (!!alipayEle && !!accepttosEle) {
-          alipayEle.click();
-          accepttosEle.click();
-          submitELe.click();
-        }
-        else {
-          window.location.href = currentUrl;
-        }
+    chrome.tabs.executeScript(tabId, {code: `
+      var currentUrl = location.href;
+      var alipayEle = document.querySelector("input[value=newalipay]");
+      var accepttosEle = document.querySelector("input[name=accepttos]");
+      var submitELe = document.querySelector("input[type=submit]");
+      if (!!alipayEle && !!accepttosEle) {
+        alipayEle.click();
+        accepttosEle.click();
+        submitELe.click();
       }
-    `, () => { });
+      else {
+        window.location.href = currentUrl;
+      }
+      
+    `, runAt: 'document_end'}, () => { console.log("load success") });
   }
   else if (UrlRegExp.view.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, `
-      window.onload = () => {
-        const code = "BWH1ZBPVK";
-        const inputEle = document.querySelector("input[name=promocode]");
-        const validateEle = document.querySelector("input[type=submit]");
-        const checkoutEle = document.querySelector("input[value=Checkout]");
-        if (!!inputEle && !!validateEle) {
-          inputEle.value = code;
-          validateEle.click();
-        }
-        else {
-          !!checkoutEle && checkoutEle.click();
-        }
+    chrome.tabs.executeScript(tabId, {code: `
+      var currentUrl = location.href;    
+      var code = "BWH1ZBPVK";
+      var inputEle = document.querySelector("input[name=promocode]");
+      var validateEle = document.querySelector("input[type=submit]");
+      var checkoutEle = document.querySelector("input[value=Checkout]");
+      if (!!inputEle && !!validateEle) {
+        inputEle.value = code;
+        validateEle.click();
       }
-    `, () => {});
+      else {
+        !!checkoutEle && checkoutEle.click();
+      }
+      
+    `, runAt: 'document_end'}, () => { console.log("load success") });
   }
 });

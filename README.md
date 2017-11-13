@@ -1,2 +1,2 @@
 # SecKill
-SecKill for goods
+SecKill for banwagon $19.9

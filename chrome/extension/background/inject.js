@@ -1,7 +1,8 @@
 const arrowURLs = ['^https://bwh1\\.net'];
 const goodsUrl = "https://bwh1.net/cart.php?a=add&pid=43";
 const UrlRegExp = {
-  goods: /https:\/\/bwh1\.net\/cart\.php\?a\=add&pid\=43/,
+  add: /https:\/\/bwh1\.net\/cart\.php\?a\=add\&pid\=43/,
+  confproduct: /https:\/\/bwh1\.net\/cart\.php\?a\=confproduct\&i/,
   view: /https:\/\/bwh1\.net\/cart\.php\?a\=view/,
   checkout: /https:\/\/bwh1\.net\/cart\.php\?a\=checkout/
 };
@@ -43,27 +44,51 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status !== 'loading' || !tab.url.match(arrowURLs.join('|'))) return;
   const result = await isInjected(tabId);
   if (chrome.runtime.lastError || result[0]) return;
-  if (UrlRegExp.goods.test(tab.url)) {
+  if (UrlRegExp.add.test(tab.url)) {
     chrome.tabs.executeScript(tabId, {code: `
-          var selectEle = document.querySelector("select[name=billingcycle]");
-          var optionELe = document.querySelector("option[value=annually]");
-          var currentUrl = location.href;
-          if (!!selectEle && !!optionELe) {
-            if (optionELe.selected == "selected") {
-              var submitEle = document.querySelector("input[type=submit]");
-              submitEle.click();
-            }
-            else {
-              optionELe.selected = "selected";
-              let e = document.createEvent("Event");
-              e.initEvent("change", true, true);
-              selectEle.dispatchEvent(e);
-            }
+        var selectEle = document.querySelector("select[name=billingcycle]");
+        var optionELe = document.querySelector("option[value=annually]");
+        var currentUrl = location.href;
+        if (!!selectEle && !!optionELe) {
+          if (optionELe.selected == "selected") {
+            var submitEle = document.querySelector("input[type=submit]");
+            submitEle.click();
           }
           else {
-            window.location.href = currentUrl
+            optionELe.selected = "selected";
+            let e = document.createEvent("Event");
+            e.initEvent("change", true, true);
+            selectEle.dispatchEvent(e);
           }
+        }
+        else {
+          window.location.href = currentUrl
+        }
     `, runAt: 'document_end'}, () => { console.log("load success") });
+  }
+  else if (UrlRegExp.confproduct.test(tab.url)) {
+    chrome.tabs.executeScript(tabId, {
+      code: `
+        var selectEle = document.querySelector("select[name=billingcycle]");
+        var optionELe = document.querySelector("option[value=annually]");
+        var currentUrl = location.href;
+        if (!!selectEle && !!optionELe) {
+          if (optionELe.selected == "selected") {
+            var submitEle = document.querySelector("input[type=submit]");
+            submitEle.click();
+          }
+          else {
+            optionELe.selected = "selected";
+            let e = document.createEvent("Event");
+            e.initEvent("change", true, true);
+            selectEle.dispatchEvent(e);
+          }
+        }
+        else {
+          window.location.href = currentUrl
+        }
+    `, runAt: 'document_end'
+    }, () => { console.log("load success") });
   }
   else if (UrlRegExp.checkout.test(tab.url)) {
     chrome.tabs.executeScript(tabId, {code: `

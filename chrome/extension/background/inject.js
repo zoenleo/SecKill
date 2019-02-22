@@ -1,5 +1,5 @@
 const arrowURLs = ['^https://bwh1\\.net'];
-const goodsUrl = 'https://bwh1.net/cart.php?a=add&pid=43';
+const goodsUrl = "https://bwh1.net/cart.php?a=add&pid=43";
 const UrlRegExp = {
   add: /https:\/\/bwh1\.net\/cart\.php\?a\=add\&pid\=43/,
   confproduct: /https:\/\/bwh1\.net\/cart\.php\?a\=confproduct\&i/,
@@ -45,7 +45,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const result = await isInjected(tabId);
   if (chrome.runtime.lastError || result[0]) return;
   if (UrlRegExp.add.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, { code: `
+    chrome.tabs.executeScript(tabId, {code: `
         var selectEle = document.querySelector("select[name=billingcycle]");
         var optionELe = document.querySelector("option[value=annually]");
         var currentUrl = location.href;
@@ -64,9 +64,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         else {
           window.location.href = currentUrl
         }
-    `,
-      runAt: 'document_end' }, () => { console.log('load success'); });
-  } else if (UrlRegExp.confproduct.test(tab.url)) {
+    `, runAt: 'document_end'}, () => { console.log("load success") });
+  }
+  else if (UrlRegExp.confproduct.test(tab.url)) {
     chrome.tabs.executeScript(tabId, {
       code: `
         var selectEle = document.querySelector("select[name=billingcycle]");
@@ -87,11 +87,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         else {
           window.location.href = currentUrl
         }
-    `,
-      runAt: 'document_end'
-    }, () => { console.log('load success'); });
-  } else if (UrlRegExp.checkout.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, { code: `
+    `, runAt: 'document_end'
+    }, () => { console.log("load success") });
+  }
+  else if (UrlRegExp.checkout.test(tab.url)) {
+    chrome.tabs.executeScript(tabId, {code: `
       var currentUrl = location.href;
       var alipayEle = document.querySelector("input[value=newalipay]");
       var accepttosEle = document.querySelector("input[name=accepttos]");
@@ -105,10 +105,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         window.location.href = currentUrl;
       }
       
-    `,
-      runAt: 'document_end' }, () => { console.log('load success'); });
-  } else if (UrlRegExp.view.test(tab.url)) {
-    chrome.tabs.executeScript(tabId, { code: `
+    `, runAt: 'document_end'}, () => { console.log("load success") });
+  }
+  else if (UrlRegExp.view.test(tab.url)) {
+    chrome.tabs.executeScript(tabId, {code: `
       var currentUrl = location.href;    
       var code = "BWH1ZBPVK";
       var inputEle = document.querySelector("input[name=promocode]");
@@ -122,7 +122,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         !!checkoutEle && checkoutEle.click();
       }
       
-    `,
-      runAt: 'document_end' }, () => { console.log('load success'); });
+    `, runAt: 'document_end'}, () => { console.log("load success") });
   }
 });
